@@ -1,45 +1,57 @@
 import { Component } from '@angular/core';
 
+type Strength = 'weak' | 'medium' | 'strong';
+type StrengthColor = 'green' | 'yellow' | 'red' | 'grey';
+
 @Component({
   selector: 'app-password-strength-checker',
   templateUrl: './password-strength-checker.component.html',
-  styleUrls: ['./password-strength-checker.component.css']
+  styleUrls: ['./password-strength-checker.component.css'],
 })
 export class PasswordStrengthCheckerComponent {
   password: string = '';
-  strengthColors: string[] = ['gray', 'gray', 'gray'];
 
-  private regexPatterns = {
-    letters: /[A-Za-z]/,
-    digits: /\d/,
-    symbols: /\W|_/ 
+  strengthColors: Record<Strength, StrengthColor> = {
+    weak: 'grey',
+    medium: 'grey',
+    strong: 'grey',
   };
 
-  checkPasswordStrength(): void {
-    if (!this.password || this.password.length < 8) {
-      this.strengthColors = ['red', 'gray', 'gray'];
-    } else if (this.isStrongPassword(this.password)) {
-      this.strengthColors = ['green', 'green', 'green'];
-    } else if (this.isMediumPassword(this.password)) {
-      this.strengthColors = ['yellow', 'yellow', 'gray'];
+  checkPasswordStrength() {
+    const hasLetters = /[a-zA-Z]/.test(this.password);
+    const hasNumbers = /\d/.test(this.password);
+    const hasSymbols = /[\W_]/.test(this.password);
+
+    if (!this.password) {
+      this.setStrengthColors();
+      return;
+    }
+
+    if (this.password.length < 8) {
+      this.setStrengthColors('red', 'red', 'red');
+      return;
+    }
+
+    if (hasLetters && hasNumbers && hasSymbols) {
+      this.setStrengthColors('green', 'green', 'green');
+    } else if (
+      (hasLetters && hasNumbers) ||
+      (hasLetters && hasSymbols) ||
+      (hasNumbers && hasSymbols)
+    ) {
+      this.setStrengthColors('yellow', 'yellow');
     } else {
-      this.strengthColors = ['red', 'gray', 'gray'];
+      this.setStrengthColors('red');
     }
   }
 
-  private isStrongPassword(password: string): boolean {
-    return this.regexPatterns.letters.test(password) &&
-           this.regexPatterns.digits.test(password) &&
-           this.regexPatterns.symbols.test(password);
-  }
-
-  private isMediumPassword(password: string): boolean {
-    const testResults = [
-      this.regexPatterns.letters.test(password),
-      this.regexPatterns.digits.test(password),
-      this.regexPatterns.symbols.test(password)
-    ].filter(Boolean);
-    
-    return testResults.length === 2;
+  private setStrengthColors(
+    colorWeak: StrengthColor = 'grey',
+    colorMedium: StrengthColor = 'grey',
+    colorStrong: StrengthColor = 'grey'
+  ) {
+    this.strengthColors.weak = colorWeak;
+    this.strengthColors.medium = colorMedium;
+    this.strengthColors.strong = colorStrong;
   }
 }
