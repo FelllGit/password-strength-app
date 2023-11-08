@@ -28,30 +28,48 @@ export class PasswordStrengthCheckerComponent {
     }
 
     if (this.password.length < 8) {
-      this.setStrengthColors('red', 'red', 'red');
+      this.setStrengthColors({
+        weak: 'red',
+        medium: 'red',
+        strong: 'red',
+      });
       return;
     }
 
     if (hasLetters && hasNumbers && hasSymbols) {
-      this.setStrengthColors('green', 'green', 'green');
+      this.setStrengthColors({
+        weak: 'green',
+        medium: 'green',
+        strong: 'green',
+      });
     } else if (
       (hasLetters && hasNumbers) ||
       (hasLetters && hasSymbols) ||
       (hasNumbers && hasSymbols)
     ) {
-      this.setStrengthColors('yellow', 'yellow');
+      this.setStrengthColors({
+        weak: 'yellow',
+        medium: 'yellow',
+      });
     } else {
-      this.setStrengthColors('red');
+      this.setStrengthColors({
+        weak: 'red',
+      });
     }
   }
 
   private setStrengthColors(
-    colorWeak: StrengthColor = 'grey',
-    colorMedium: StrengthColor = 'grey',
-    colorStrong: StrengthColor = 'grey'
+    strengthColors: Partial<Record<Strength, StrengthColor>> = {
+      weak: 'grey',
+      medium: 'grey',
+      strong: 'grey',
+    }
   ) {
-    this.strengthColors.weak = colorWeak;
-    this.strengthColors.medium = colorMedium;
-    this.strengthColors.strong = colorStrong;
+    this.strengthColors = {
+      weak: 'grey',
+      medium: 'grey',
+      strong: 'grey',
+      ...strengthColors
+    };
   }
 }
